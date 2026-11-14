@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "SkillSync AI - Autonomous Multi-Agent Personalized Learning & Career Guidance Platform",
   "scripts": {
+    "test": "python run_tests.py",
+    "test:backend": "python -m unittest discover -s backend/tests -p \"test_*.py\"",
+    "test:frontend": "node --test frontend/tests/*.test.mjs",
     "dev": "npm --prefix frontend run dev",
     "rundev": "npm --prefix frontend run dev",
     "install:frontend": "cd frontend && npm install --legacy-peer-deps",

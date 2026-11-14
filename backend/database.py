@@ -6,8 +6,14 @@ Handles full schema auto-generation, seeding, and transaction management.
 import os
 import json
 import sqlite3
+import hashlib
+import uuid
+import secrets
 from typing import Dict, Any, Optional, List
 from datetime import datetime
+
+def hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 # Environment check for Supabase credentials
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
@@ -113,8 +119,29 @@ class DatabaseClient:
             details_json TEXT DEFAULT '{}',
             recorded_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
+
+        CREATE TABLE IF NOT EXISTS auth_tokens (
+            token TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
         """)
         conn.commit()
+
+        # Ensure password_hash column exists
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN password_hash TEXT DEFAULT ''")
+            conn.commit()
+        except Exception:
+            pass
+
+        # Ensure demo accounts have valid password hashes
+        try:
+            cursor.execute("UPDATE users SET password_hash = ? WHERE id = 'alex_demo' AND (password_hash IS NULL OR password_hash = '')", (hash_password("alex123"),))
+            cursor.execute("UPDATE users SET password_hash = ? WHERE id = 'maya_demo' AND (password_hash IS NULL OR password_hash = '')", (hash_password("maya123"),))
+            conn.commit()
+        except Exception:
+            pass
 
         # Seed initial users if empty
         cursor.execute("SELECT COUNT(*) FROM users")
@@ -200,6 +227,72 @@ class DatabaseClient:
             }
         return None
 
+    def register_user(self, email: str, full_name: str, password: str, target_career_id: str = "full-stack-dev") -> Dict[str, Any]:
+        email_clean = email.strip().lower()
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users WHERE LOWER(email) = ?", (email_clean,))
+        if cursor.fetchone():
+            conn.close()
+            raise ValueError("Email already registered")
+
+        user_id = f"user_{uuid.uuid4().hex[:10]}"
+        pwd_hash = hash_password(password)
+        initial_skills = [
+            {"name": "HTML/CSS", "level": 2, "category": "Frontend", "verified": False},
+            {"name": "Git", "level": 2, "category": "DevOps", "verified": False}
+        ]
+
+        cursor.execute("""
+        INSERT INTO users (id, email, full_name, target_career_id, career_readiness, streak_days, hours_studied, skills_json, password_hash)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            user_id, email_clean, full_name.strip(), target_career_id, 20.0, 1, 0.0, json.dumps(initial_skills), pwd_hash
+        ))
+
+        token = f"tok_{secrets.token_hex(16)}"
+        cursor.execute("INSERT INTO auth_tokens (token, user_id) VALUES (?, ?)", (token, user_id))
+        conn.commit()
+        conn.close()
+
+        profile = self.get_user_profile(user_id)
+        return {"user": profile, "token": token}
+
+    def login_user(self, email: str, password: str) -> Optional[Dict[str, Any]]:
+        email_clean = email.strip().lower()
+        pwd_hash = hash_password(password)
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, password_hash FROM users WHERE LOWER(email) = ?", (email_clean,))
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return None
+
+        stored_hash = row["password_hash"]
+        if stored_hash and stored_hash != pwd_hash:
+            conn.close()
+            return None
+
+        user_id = row["id"]
+        token = f"tok_{secrets.token_hex(16)}"
+        cursor.execute("INSERT INTO auth_tokens (token, user_id) VALUES (?, ?)", (token, user_id))
+        conn.commit()
+        conn.close()
+
+        profile = self.get_user_profile(user_id)
+        return {"user": profile, "token": token}
+
+    def get_user_by_token(self, token: str) -> Optional[Dict[str, Any]]:
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM auth_tokens WHERE token = ?", (token,))
+        row = cursor.fetchone()
+        conn.close()
+        if not row:
+            return None
+        return self.get_user_profile(row["user_id"])
+
     def save_user_profile(self, profile: Dict[str, Any]):
         uid = profile.get("id", "alex_demo")
         skills_json = json.dumps(profile.get("skills", []))
@@ -260,7 +353,7 @@ class DatabaseClient:
         return profile
 
     def save_assessment_record(self, record: Dict[str, Any]):
-        aid = f"rec_{int(datetime.now().timestamp())}"
+        aid = f"rec_{int(datetime.now().timestamp())}_{uuid.uuid4().hex[:6]}"
         conn = self._get_connection()
         cursor = conn.cursor()
         cursor.execute("""

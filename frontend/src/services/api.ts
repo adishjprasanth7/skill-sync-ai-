@@ -580,6 +580,32 @@ export const apiService = {
     }
   },
 
+  async registerUser(data: { email: string; full_name: string; password: string; target_career_id?: string }): Promise<{ access_token: string; user: UserProfile; message: string }> {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Registration failed' }));
+      throw new Error(err.detail || 'Registration failed');
+    }
+    return await res.json();
+  },
+
+  async loginUser(data: { email: string; password: string }): Promise<{ access_token: string; user: UserProfile; message: string }> {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Login failed' }));
+      throw new Error(err.detail || 'Invalid email or password');
+    }
+    return await res.json();
+  },
+
   async runOrchestration(userProfile: UserProfile, careerId: string): Promise<{
     roadmap: RoadmapData;
     agent_logs: AgentLog[];

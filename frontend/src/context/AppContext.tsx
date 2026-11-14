@@ -36,6 +36,9 @@ interface AppContextType {
   triggerAdaptiveRemedial: (skill: string, weakTopics: string[]) => void;
   triggerCareerPivot: (newCareerId: string) => Promise<void>;
   switchUser: (profileKey: 'alex_demo' | 'maya_demo') => Promise<void>;
+  register: (data: { email: string; full_name: string; password: string; target_career_id?: string }) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
   showNotification: (message: string, type?: 'success' | 'warning' | 'info') => void;
   dismissNotification: () => void;
 }
@@ -312,6 +315,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const register = async (data: { email: string; full_name: string; password: string; target_career_id?: string }) => {
+    try {
+      const res = await apiService.registerUser(data);
+      setUser(res.user);
+      localStorage.setItem('skillsync_auth_token', res.access_token);
+      showNotification(`Welcome, ${res.user.full_name}! Account created successfully.`, 'success');
+      const target = careers.find(c => c.id === res.user.target_career_id) || careers[0];
+      setActiveCareer(target);
+      await executeOrchestration(res.user, target.id);
+    } catch (err: any) {
+      showNotification(err.message || 'Registration failed', 'warning');
+      throw err;
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    try {
+      const res = await apiService.loginUser({ email, password });
+      setUser(res.user);
+      localStorage.setItem('skillsync_auth_token', res.access_token);
+      showNotification(`Welcome back, ${res.user.full_name}!`, 'success');
+      const target = careers.find(c => c.id === res.user.target_career_id) || careers[0];
+      setActiveCareer(target);
+      await executeOrchestration(res.user, target.id);
+    } catch (err: any) {
+      showNotification(err.message || 'Login failed', 'warning');
+      throw err;
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('skillsync_auth_token');
+    setUser(FALLBACK_USER);
+    showNotification('Logged out successfully. Switched to demo preview.', 'info');
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -334,6 +373,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         triggerAdaptiveRemedial,
         triggerCareerPivot,
         switchUser,
+        register,
+        login,
+        logout,
         showNotification,
         dismissNotification
       }}

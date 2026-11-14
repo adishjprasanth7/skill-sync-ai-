@@ -1,8 +1,9 @@
+import re
 from typing import List, Dict, Optional, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 class UserSkill(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1)
     level: int = Field(ge=1, le=4, default=1)  # 1: Beginner, 2: Intermediate, 3: Advanced, 4: Expert
     category: Optional[str] = "General"
     verified: bool = False
@@ -16,6 +17,48 @@ class UserProfile(BaseModel):
     career_readiness: float = 0.0
     streak_days: int = 1
     hours_studied: float = 0.0
+
+class UserRegisterRequest(BaseModel):
+    email: str = Field(..., min_length=5, description="Valid user email address")
+    password: str = Field(..., min_length=6, description="Password with minimum 6 characters")
+    full_name: str = Field(..., min_length=2, description="User full name")
+    target_career_id: Optional[str] = "full-stack-dev"
+
+    @field_validator('email')
+    @classmethod
+    def validate_email_format(cls, v: str) -> str:
+        clean = v.strip().lower()
+        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_regex, clean):
+            raise ValueError("Invalid email format")
+        return clean
+
+    @field_validator('full_name')
+    @classmethod
+    def validate_full_name(cls, v: str) -> str:
+        clean = v.strip()
+        if not clean or len(clean) < 2:
+            raise ValueError("Full name must be at least 2 characters long")
+        return clean
+
+class UserLoginRequest(BaseModel):
+    email: str = Field(..., min_length=5)
+    password: str = Field(..., min_length=1)
+
+    @field_validator('email')
+    @classmethod
+    def validate_email_format(cls, v: str) -> str:
+        clean = v.strip().lower()
+        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_regex, clean):
+            raise ValueError("Invalid email format")
+        return clean
+
+class AuthTokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: Dict[str, Any]
+    message: str
 
 class SkillAnalysisRequest(BaseModel):
     skills: List[UserSkill]

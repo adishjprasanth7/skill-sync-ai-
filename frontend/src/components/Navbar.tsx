@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   Sparkles, Flame, RefreshCw, ChevronDown, Layers, Cpu, ShieldCheck, Database,
-  Search, Check, X, Compass
+  Search, Check, X, Compass, UserPlus
 } from 'lucide-react';
+import { AuthModal } from './AuthModal';
 
 export const Navbar: React.FC = () => {
   const { 
@@ -14,6 +15,7 @@ export const Navbar: React.FC = () => {
   const [isTargetDropdownOpen, setIsTargetDropdownOpen] = useState(false);
   const [targetSearchQuery, setTargetSearchQuery] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const targetDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click or escape
@@ -310,10 +312,23 @@ export const Navbar: React.FC = () => {
                 <span>Maya Lin (AI & ML Track)</span>
                 {user.id === 'maya_demo' && <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />}
               </button>
+
+              <div className="pt-2 mt-1 border-t border-slate-800">
+                <button
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/30 flex items-center gap-2 transition-colors"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Sign In / Register</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Authentication Modal */}
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </header>
   );
 };

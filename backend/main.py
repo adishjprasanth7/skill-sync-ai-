@@ -25,7 +25,8 @@ from agents.orchestrator import orchestrator, TOKEN_USAGE_COUNTER
 from database import db
 from models import (
     UserProfile, UserSkill, SkillAnalysisRequest, CareerMatchResponse,
-    RoadmapResponse, AssessmentSubmission, AdaptiveTriggerRequest, ChatRequest
+    RoadmapResponse, AssessmentSubmission, AdaptiveTriggerRequest, ChatRequest,
+    UserRegisterRequest, UserLoginRequest, AuthTokenResponse
 )
 
 app = FastAPI(
@@ -64,6 +65,47 @@ def database_status():
 # ==========================================
 # 2. Authentication & Profiles
 # ==========================================
+@app.post("/api/auth/register", response_model=AuthTokenResponse, status_code=201)
+def register_user(req: UserRegisterRequest):
+    try:
+        res = db.register_user(
+            email=req.email,
+            full_name=req.full_name,
+            password=req.password,
+            target_career_id=req.target_career_id or "full-stack-dev"
+        )
+        return {
+            "access_token": res["token"],
+            "token_type": "bearer",
+            "user": res["user"],
+            "message": "User registered successfully"
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
+
+@app.post("/api/auth/login", response_model=AuthTokenResponse)
+def login_user(req: UserLoginRequest):
+    auth_res = db.login_user(email=req.email, password=req.password)
+    if not auth_res:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    return {
+        "access_token": auth_res["token"],
+        "token_type": "bearer",
+        "user": auth_res["user"],
+        "message": "Login successful"
+    }
+
+@app.get("/api/auth/me")
+def get_current_user(token: Optional[str] = None):
+    if not token:
+        raise HTTPException(status_code=401, detail="Authorization token required")
+    user = db.get_user_by_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    return user
+
 @app.get("/api/auth/profile/{user_id}")
 def get_user_profile(user_id: str):
     profile = db.get_user_profile(user_id)
@@ -79,6 +121,8 @@ def save_user_profile(profile: Dict[str, Any] = Body(...)):
 @app.post("/api/auth/demo-switch/{profile_key}")
 def switch_demo_user(profile_key: str):
     profile = db.get_user_profile(profile_key)
+    if not profile:
+        raise HTTPException(status_code=404, detail=f"Demo profile '{profile_key}' not found")
     return {"message": f"Active profile switched to {profile.get('full_name')}", "profile": profile}
 
 # ==========================================
@@ -137,6 +181,8 @@ def get_assessment_topics():
 @app.get("/api/assessments/questions/{skill}")
 def get_skill_questions(skill: str):
     questions = get_questions_for_skill(skill)
+    if not questions:
+        raise HTTPException(status_code=404, detail=f"No questions found for skill '{skill}'")
     # Strip correct_index before returning to client to ensure fair evaluation
     sanitized = []
     for q in questions:

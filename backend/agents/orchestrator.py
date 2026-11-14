@@ -411,7 +411,18 @@ class MultiAgentOrchestrator:
             "timestamp": datetime.now().isoformat()
         })
 
-        # Step 5: Progress Monitor
+        # Step 5: Assessment Evaluator
+        logs.append({
+            "agent_name": self.evaluator.name,
+            "role": self.evaluator.role,
+            "status": "completed",
+            "input_summary": f"Calibrated diagnostic checkpoints for {len(advisor_out['missing_core_skills'])} missing competencies",
+            "output_summary": f"Diagnostic benchmarks active across {len(enriched_phases)} roadmap phases",
+            "tokens_used": 35,
+            "timestamp": datetime.now().isoformat()
+        })
+
+        # Step 6: Progress Monitor
         total_nodes = sum(len(p.get("nodes", [])) for p in enriched_phases)
         completed_nodes = sum(sum(1 for n in p.get("nodes", []) if n.get("completed")) for p in enriched_phases)
         monitor_out = self.monitor.run(user_profile, completed_nodes, total_nodes)
