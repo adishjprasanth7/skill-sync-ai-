@@ -313,7 +313,7 @@ def mentor_chat(req: ChatRequest):
     }
 
 # ==========================================
-# 10. Production Static SPA Serving (Render)
+# 10. Production Static SPA Serving
 # ==========================================
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
