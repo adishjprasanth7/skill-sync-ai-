@@ -9,7 +9,7 @@ SkillSync AI is an enterprise-grade personalized learning and career intelligenc
 
 ## 🌟 Key Capabilities & Modules
 
-1. **Autonomous Multi-Agent Center**: Live collaborative pipeline coordinating six specialized agents:
+1. **Autonomous Multi-Agent Orchestration**: Live collaborative pipeline coordinating six specialized agents:
    - 🔍 **Skill Analyst**: Audits current competencies, verifies proficiency levels, and detects missing prerequisite foundations.
    - 🧭 **Career Advisor**: Cross-references learner skills against live industry requirements and computes career readiness scores.
    - 🗺️ **Learning Planner**: Sequences modular curriculum phases, milestones, hands-on project prompts, and capstones.

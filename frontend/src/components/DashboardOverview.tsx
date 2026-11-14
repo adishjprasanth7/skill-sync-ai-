@@ -264,12 +264,9 @@ export const DashboardOverview: React.FC = () => {
               <Cpu className="w-4 h-4 text-indigo-400" />
               <h3 className="text-sm font-bold text-white">Latest Multi-Agent Actions</h3>
             </div>
-            <button
-              onClick={() => setActiveView('agents')}
-              className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold"
-            >
-              Open Agent Center →
-            </button>
+            <span className="text-xs text-emerald-400 font-semibold font-mono bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+              Swarm Synchronized
+            </span>
           </div>
 
           <div className="space-y-3">

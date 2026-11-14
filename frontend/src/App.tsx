@@ -10,7 +10,6 @@ import { CareerMatcher } from './components/CareerMatcher';
 import { RoadmapView } from './components/RoadmapView';
 import { AssessmentCenter } from './components/AssessmentCenter';
 import { AdaptiveEngineView } from './components/AdaptiveEngineView';
-import { AgentCenterView } from './components/AgentCenterView';
 import { AIMentor } from './components/AIMentor';
 import { AnalyticsView } from './components/AnalyticsView';
 
@@ -48,7 +47,6 @@ const MainLayout: React.FC = () => {
           {activeView === 'mentor' && <AIMentor />}
           {activeView === 'assessments' && <AssessmentCenter />}
           {activeView === 'adaptive' && <AdaptiveEngineView />}
-          {activeView === 'agents' && <AgentCenterView />}
           {activeView === 'analytics' && <AnalyticsView />}
         </main>
       </div>
