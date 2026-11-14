@@ -31,7 +31,6 @@ export const Sidebar: React.FC = () => {
     { id: 'mentor', label: 'AI Mentor', icon: Bot, badge: 'Contextual' },
     { id: 'assessments', label: 'Assessments', icon: GraduationCap },
     { id: 'adaptive', label: 'Adaptive Engine', icon: Zap, badge: 'Live Lab' },
-    { id: 'agents', label: 'AI Agent Center', icon: Cpu, badge: '6 Agents' },
     { id: 'analytics', label: 'Analytics & Velocity', icon: LineChart },
   ];
 

@@ -13,7 +13,6 @@ export type AppView =
   | 'mentor' 
   | 'assessments' 
   | 'adaptive' 
-  | 'agents' 
   | 'analytics';
 
 interface AppContextType {

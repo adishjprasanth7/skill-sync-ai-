@@ -98,7 +98,7 @@ export const Navbar: React.FC = () => {
             }`}
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isOrchestrating ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">{isOrchestrating ? 'Coordinating...' : 'Run Agents'}</span>
+            <span className="hidden sm:inline">{isOrchestrating ? 'Optimizing...' : 'Optimize Roadmap'}</span>
           </button>
 
           {/* Profile Switcher Menu */}

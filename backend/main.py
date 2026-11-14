@@ -203,7 +203,7 @@ def trigger_adaptive_update(req: AdaptiveTriggerRequest):
     return {"status": "noop", "message": "Trigger processed"}
 
 # ==========================================
-# 8. Multi-Agent Center & Pipeline
+# 8. Background Multi-Agent Pipeline
 # ==========================================
 @app.get("/api/agents/status")
 def get_agents_status():
