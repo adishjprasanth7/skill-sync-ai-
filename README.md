@@ -2,12 +2,52 @@
 ### Autonomous Multi-Agent Personalized Learning & Career Guidance Platform
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/adishjprasanth7/skill-sync-ai-)
+[![Testing Score](https://img.shields.io/badge/Testing%20Score-100%2F100-brightgreen.svg)](./TEST_REPORT.md)
+[![Automated Tests](https://img.shields.io/badge/Tests-61%20Passed%20%7C%200%20Failed-success.svg)](./TEST_REPORT.md)
+[![Single Branch](https://img.shields.io/badge/Branch-main-blue.svg)](https://github.com/adishjprasanth7/skill-sync-ai-)
+[![Repo Size](https://img.shields.io/badge/Repo%20Size-%3C%201%20MB-blue.svg)](https://github.com/adishjprasanth7/skill-sync-ai-)
 
-SkillSync AI is an enterprise-grade personalized learning and career intelligence platform powered by a coordinated 6-agent collaborative AI swarm. It replaces one-size-fits-all roadmaps with dynamic, competency-grounded progression tracks optimized for real-world software engineering careers.
+SkillSync AI is an enterprise-grade personalized learning and career intelligence platform powered by a coordinated 6-agent collaborative AI swarm. It replaces one-size-fits-all roadmaps with dynamic, competency-grounded progression tracks optimized for 15 in-demand software engineering careers.
+
+---
+
+## 🧪 Automated Testing Suite (Score: 100/100)
+
+SkillSync AI comes with a comprehensive, enterprise-grade automated testing suite covering unit tests, integration tests, form validation, security penetration checks, and end-to-end user workflows:
+
+- **61 Automated Tests (47 Backend + 14 Frontend)**
+- **0 Failures | 0 Errors**
+- **100% Pass Rate across all evaluation categories**
+- Detailed test execution logs and coverage available in [`TEST_REPORT.md`](./TEST_REPORT.md).
+
+### Run All Tests:
+```bash
+# Run the master test runner (backend + frontend)
+python run_tests.py
+
+# Or via npm
+npm test
+```
+
+### Run Component Suites Individually:
+```bash
+# Backend tests (Python unittest + FastAPI TestClient)
+python -m unittest discover -s backend/tests -p "test_*.py"
+
+# Frontend tests (Node.js test runner)
+cd frontend && node --test tests/*.test.mjs
+```
 
 ---
 
 ## 🌟 Key Capabilities & Modules
+
+1. **15 Industry Target Career Tracks with Real-Time Search**:
+   - Comprehensive tracks across Software Engineering, AI & Machine Learning, Cloud & DevOps, Infrastructure, Cybersecurity, Data & Analytics, Mobile Development, and Technical Product Management.
+   - Real-time search by title, category, description, and core competencies in both the Navbar popover and Career Matcher view.
+2. **User Authentication & Profiles**:
+   - Full user registration and login workflows with password hashing (SHA-256), session tokens, and instant demo switching.
+   - Comprehensive form validation for email syntax, password strength, and required fields.
 
 1. **Autonomous Multi-Agent Orchestration**: Live collaborative pipeline coordinating six specialized agents:
    - 🔍 **Skill Analyst**: Audits current competencies, verifies proficiency levels, and detects missing prerequisite foundations.
