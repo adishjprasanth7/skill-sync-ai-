@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "npm --prefix frontend run dev",
     "rundev": "npm --prefix frontend run dev",
-    "build": "npm --prefix frontend run build",
+    "install:frontend": "cd frontend && npm install --legacy-peer-deps",
+    "build": "cd frontend && npm install --legacy-peer-deps && npm run build",
     "preview": "npm --prefix frontend run preview",
     "server": "python -m uvicorn backend.main:app --reload --port 8000"
   },
