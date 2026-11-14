@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { 
-  Sparkles, Flame, RefreshCw, ChevronDown, User, Layers, Cpu, ShieldCheck
+  Sparkles, Flame, RefreshCw, ChevronDown, Layers, Cpu, ShieldCheck, Database
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -79,6 +79,12 @@ export const Navbar: React.FC = () => {
           <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-violet-500/20 bg-violet-950/30 text-xs font-semibold text-violet-300" title="Token-efficient caching active">
             <Sparkles className="w-3.5 h-3.5 text-violet-400" />
             <span>{totalTokensUsed} tokens</span>
+          </div>
+
+          {/* Database Live Badge */}
+          <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-500/20 bg-emerald-950/30 text-xs font-semibold text-emerald-300" title="SQLite Persistent Storage Active (Supabase Sync Ready)">
+            <Database className="w-3.5 h-3.5 text-emerald-400" />
+            <span>DB: Live</span>
           </div>
 
           {/* Orchestrate Pipeline Button */}
