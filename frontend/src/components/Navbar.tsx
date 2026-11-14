@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
-  Sparkles, Flame, RefreshCw, ChevronDown, Layers, Cpu, ShieldCheck, Database
+  Sparkles, Flame, RefreshCw, ChevronDown, Layers, Cpu, ShieldCheck, Database,
+  Search, Check, X, Compass
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -9,6 +10,49 @@ export const Navbar: React.FC = () => {
     user, careers, activeCareer, setTargetCareer, isOrchestrating, 
     runOrchestrationPipeline, totalTokensUsed, switchUser, setActiveView, activeView 
   } = useApp();
+
+  const [isTargetDropdownOpen, setIsTargetDropdownOpen] = useState(false);
+  const [targetSearchQuery, setTargetSearchQuery] = useState('');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
+  const targetDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click or escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (targetDropdownRef.current && !targetDropdownRef.current.contains(e.target as Node)) {
+        setIsTargetDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsTargetDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  // Unique categories for filtering
+  const categories = ['All', ...Array.from(new Set(careers.map(c => c.category)))];
+
+  // Filtered target careers based on search query & category filter
+  const filteredCareers = careers.filter(career => {
+    const matchesCategory = selectedCategoryFilter === 'All' || career.category === selectedCategoryFilter;
+    const query = targetSearchQuery.trim().toLowerCase();
+    if (!query) return matchesCategory;
+
+    const matchesQuery = 
+      career.title.toLowerCase().includes(query) ||
+      career.category.toLowerCase().includes(query) ||
+      career.description.toLowerCase().includes(query) ||
+      career.core_skills.some(s => s.skill.toLowerCase().includes(query));
+
+    return matchesCategory && matchesQuery;
+  });
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
@@ -43,21 +87,146 @@ export const Navbar: React.FC = () => {
 
         {/* Center / Right Controls */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Target Career Selector */}
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/60">
-            <Layers className="w-4 h-4 text-indigo-400 shrink-0" />
-            <span className="text-xs text-slate-400 font-medium">Target:</span>
-            <select
-              value={activeCareer.id}
-              onChange={(e) => setTargetCareer(e.target.value)}
-              className="bg-transparent text-xs font-semibold text-slate-100 focus:outline-none cursor-pointer"
+          {/* Searchable Target Career Popover */}
+          <div className="relative" ref={targetDropdownRef}>
+            <button
+              onClick={() => setIsTargetDropdownOpen(!isTargetDropdownOpen)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+                isTargetDropdownOpen 
+                  ? 'border-indigo-500/60 bg-indigo-950/40 text-indigo-200 shadow-lg shadow-indigo-950/50 ring-1 ring-indigo-500/40' 
+                  : 'border-slate-800 bg-slate-900/70 hover:bg-slate-800/80 text-slate-200'
+              }`}
+              title="Click to search and change target career track"
             >
-              {careers.map((c) => (
-                <option key={c.id} value={c.id} className="bg-slate-900 text-slate-100">
-                  {c.title}
-                </option>
-              ))}
-            </select>
+              <Layers className="w-4 h-4 text-indigo-400 shrink-0" />
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-slate-400 hidden lg:inline font-normal">Target:</span>
+                <span className="max-w-[140px] sm:max-w-[180px] truncate text-slate-100 font-medium">
+                  {activeCareer.title}
+                </span>
+                <span className="hidden xl:inline text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  {activeCareer.category}
+                </span>
+              </div>
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isTargetDropdownOpen ? 'rotate-180 text-indigo-400' : ''}`} />
+            </button>
+
+            {/* Popover Menu with Real-Time Search */}
+            {isTargetDropdownOpen && (
+              <div className="absolute right-0 sm:right-auto sm:left-0 top-full mt-2 w-80 sm:w-96 p-3 rounded-2xl border border-slate-800 bg-slate-950/95 backdrop-blur-2xl shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                {/* Search Input Box */}
+                <div className="relative mb-2.5">
+                  <Search className="w-4 h-4 text-indigo-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={targetSearchQuery}
+                    onChange={(e) => setTargetSearchQuery(e.target.value)}
+                    placeholder="Search career, skill, or role..."
+                    autoFocus
+                    className="w-full pl-9 pr-8 py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500/70 focus:ring-1 focus:ring-indigo-500/40 transition-all"
+                  />
+                  {targetSearchQuery && (
+                    <button
+                      onClick={() => setTargetSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Category Pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2 scrollbar-none text-[11px]">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategoryFilter(cat)}
+                      className={`px-2 py-0.5 rounded-lg whitespace-nowrap font-medium transition-colors ${
+                        selectedCategoryFilter === cat
+                          ? 'bg-indigo-600 text-white font-semibold'
+                          : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Career Options List */}
+                <div className="max-h-64 overflow-y-auto space-y-1 pr-1">
+                  {filteredCareers.length === 0 ? (
+                    <div className="p-4 text-center text-xs text-slate-400">
+                      No careers match "{targetSearchQuery}".
+                      <div className="mt-2">
+                        <button
+                          onClick={() => {
+                            setTargetSearchQuery('');
+                            setSelectedCategoryFilter('All');
+                          }}
+                          className="text-indigo-400 hover:underline font-semibold"
+                        >
+                          Clear search filters
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    filteredCareers.map((c) => {
+                      const isSelected = c.id === activeCareer.id;
+                      return (
+                        <button
+                          key={c.id}
+                          onClick={() => {
+                            setTargetCareer(c.id);
+                            setIsTargetDropdownOpen(false);
+                          }}
+                          className={`w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between transition-all ${
+                            isSelected
+                              ? 'bg-indigo-600/20 border border-indigo-500/40 text-indigo-200 font-semibold'
+                              : 'text-slate-300 hover:bg-slate-900/80 border border-transparent hover:border-slate-800'
+                          }`}
+                        >
+                          <div className="min-w-0 pr-2">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-white truncate">{c.title}</span>
+                              {isSelected && (
+                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/30 text-indigo-300 font-bold">
+                                  Current
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-400">
+                              <span>{c.category}</span>
+                              <span>•</span>
+                              <span className="text-emerald-400">{c.market_demand}</span>
+                              <span>•</span>
+                              <span>{c.avg_salary}</span>
+                            </div>
+                          </div>
+                          {isSelected && <Check className="w-4 h-4 text-indigo-400 shrink-0" />}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Popover Footer */}
+                <div className="pt-2 mt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                  <span className="text-slate-400 font-mono">
+                    {filteredCareers.length} of {careers.length} careers
+                  </span>
+                  <button
+                    onClick={() => {
+                      setIsTargetDropdownOpen(false);
+                      setActiveView('careers');
+                    }}
+                    className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+                  >
+                    <Compass className="w-3.5 h-3.5" />
+                    <span>View Gap Analysis</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Readiness Meter */}

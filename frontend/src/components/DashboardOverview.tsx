@@ -56,9 +56,17 @@ export const DashboardOverview: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Welcome back, {user.full_name.split(' ')[0]} 👋
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
-              Targeting <span className="text-indigo-400 font-semibold">{activeCareer.title}</span>. 
-              Your personalized multi-agent roadmap is continuously optimized for market demand.
+            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl flex flex-wrap items-center gap-1.5">
+              <span>Targeting</span>
+              <button 
+                onClick={() => setActiveView('careers')}
+                className="text-indigo-400 font-semibold hover:text-indigo-300 inline-flex items-center gap-1 bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20 transition-colors"
+                title="Search and select from 15 target career tracks"
+              >
+                <span>{activeCareer.title}</span>
+                <span className="text-[10px] text-indigo-300 font-normal">→ search 15 targets</span>
+              </button>
+              <span>— continuously optimized for market demand.</span>
             </p>
           </div>
 
