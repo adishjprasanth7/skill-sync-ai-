@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   Flame, Clock, Award, Target, ArrowRight, Zap, 
-  CheckCircle2, Compass, Cpu, Bot, Sparkles, BookOpen 
+  CheckCircle2, Compass, Bot, Sparkles, BookOpen 
 } from 'lucide-react';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, 
@@ -12,7 +12,7 @@ import {
 export const DashboardOverview: React.FC = () => {
   const { 
     user, activeCareer, roadmap, toggleNodeCompletion, 
-    setActiveView, agentLogs, adaptiveEvents 
+    setActiveView, adaptiveEvents 
   } = useApp();
 
   // Find next in-progress or incomplete node
@@ -255,70 +255,37 @@ export const DashboardOverview: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Grid: Multi-Agent Activity & Adaptive Alerts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Multi-Agent Coordinated Operations */}
-        <div className="p-6 rounded-3xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-indigo-400" />
-              <h3 className="text-sm font-bold text-white">Latest Multi-Agent Actions</h3>
-            </div>
-            <span className="text-xs text-emerald-400 font-semibold font-mono bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-              Swarm Synchronized
-            </span>
+      {/* Adaptive Learning Event Feed */}
+      <div className="p-6 rounded-3xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-amber-400" />
+            <h3 className="text-sm font-bold text-white">Adaptive Learning Event Feed</h3>
           </div>
-
-          <div className="space-y-3">
-            {agentLogs.slice(0, 4).map((log, i) => (
-              <div key={i} className="p-3 rounded-xl border border-slate-800/80 bg-slate-950/40 flex items-start justify-between gap-3">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-200">{log.agent_name}</span>
-                    <span className="text-[10px] text-indigo-300 font-mono">({log.role})</span>
-                  </div>
-                  <p className="text-xs text-slate-400">{log.output_summary}</p>
-                </div>
-                <span className="text-[10px] font-mono text-slate-500 shrink-0">
-                  {log.tokens_used} tokens
-                </span>
-              </div>
-            ))}
-          </div>
+          <button
+            onClick={() => setActiveView('adaptive')}
+            className="text-xs text-amber-400 hover:text-amber-300 font-semibold"
+          >
+            Simulate Triggers →
+          </button>
         </div>
 
-        {/* Adaptive Intelligence Trigger History */}
-        <div className="p-6 rounded-3xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-400" />
-              <h3 className="text-sm font-bold text-white">Adaptive Learning Event Feed</h3>
-            </div>
-            <button
-              onClick={() => setActiveView('adaptive')}
-              className="text-xs text-amber-400 hover:text-amber-300 font-semibold"
-            >
-              Simulate Triggers →
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {adaptiveEvents.slice(0, 4).map((event) => (
-              <div key={event.id} className="p-3 rounded-xl border border-slate-800/80 bg-slate-950/40 flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0 mt-1.5" />
-                <div className="flex-1 space-y-0.5">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-slate-200">{event.title}</h4>
-                    <span className="text-[10px] text-slate-500">{event.timestamp}</span>
-                  </div>
-                  <p className="text-xs text-slate-400">{event.description}</p>
-                  <span className="inline-block text-[10px] text-emerald-400 font-semibold mt-1">
-                    {event.impact}
-                  </span>
+        <div className="space-y-3">
+          {adaptiveEvents.slice(0, 4).map((event) => (
+            <div key={event.id} className="p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/40 flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0 mt-1.5" />
+              <div className="flex-1 space-y-0.5">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-slate-200">{event.title}</h4>
+                  <span className="text-[10px] text-slate-500 font-mono">{event.timestamp}</span>
                 </div>
+                <p className="text-xs text-slate-400">{event.description}</p>
+                <span className="inline-block text-[10px] text-emerald-400 font-semibold mt-1">
+                  {event.impact}
+                </span>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

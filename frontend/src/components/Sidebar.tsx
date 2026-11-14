@@ -41,7 +41,7 @@ export const Sidebar: React.FC = () => {
         <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
           Core Modules
         </div>
-        
+
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeView === item.id;
@@ -50,25 +50,22 @@ export const Sidebar: React.FC = () => {
             <button
               key={item.id}
               onClick={() => setActiveView(item.id)}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
-                isActive
-                  ? 'bg-gradient-to-r from-indigo-600/25 to-violet-600/15 text-indigo-300 border border-indigo-500/30 shadow-lg shadow-indigo-950/50'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/60'
-              }`}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${isActive
+                ? 'bg-gradient-to-r from-indigo-600/25 to-violet-600/15 text-indigo-300 border border-indigo-500/30 shadow-lg shadow-indigo-950/50'
+                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/60'
+                }`}
             >
               <div className="flex items-center gap-3">
-                <Icon className={`w-4 h-4 transition-colors ${
-                  isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-300'
-                }`} />
+                <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-300'
+                  }`} />
                 <span>{item.label}</span>
               </div>
 
               {item.badge && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold tracking-tight ${
-                  isActive
-                    ? 'bg-indigo-500/30 text-indigo-200 border border-indigo-400/30'
-                    : 'bg-slate-800/80 text-slate-400 group-hover:text-slate-200'
-                }`}>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold tracking-tight ${isActive
+                  ? 'bg-indigo-500/30 text-indigo-200 border border-indigo-400/30'
+                  : 'bg-slate-800/80 text-slate-400 group-hover:text-slate-200'
+                  }`}>
                   {item.badge}
                 </span>
               )}

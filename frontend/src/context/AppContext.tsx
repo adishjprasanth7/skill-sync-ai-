@@ -1,18 +1,19 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  UserProfile, Career, RoadmapData, AgentLog, AdaptiveEvent, UserSkill 
+import {
+  UserProfile, Career, RoadmapData, AgentLog, AdaptiveEvent, UserSkill
 } from '../types';
 import { apiService, FALLBACK_CAREERS, FALLBACK_USER } from '../services/api';
 
-export type AppView = 
-  | 'landing' 
-  | 'dashboard' 
-  | 'skills' 
-  | 'careers' 
-  | 'roadmap' 
-  | 'mentor' 
-  | 'assessments' 
-  | 'adaptive' 
+export type AppView =
+  | 'landing'
+  | 'dashboard'
+  | 'skills'
+  | 'careers'
+  | 'roadmap'
+  | 'mentor'
+  | 'assessments'
+  | 'adaptive'
+  | 'agents'
   | 'analytics';
 
 interface AppContextType {
@@ -260,7 +261,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const target = careers.find(c => c.id === newCareerId);
     if (!target) return;
     showNotification(`Adaptive Pivot: Recalculating gaps for ${target.title}...`, 'info');
-    
+
     // Retain user's completed skills and re-run multi-agent pipeline
     await executeOrchestration({ ...user, target_career_id: newCareerId }, newCareerId);
     setActiveCareer(target);
