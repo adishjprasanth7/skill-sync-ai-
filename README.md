@@ -1,6 +1,8 @@
 # SkillSync AI 🚀
 ### Autonomous Multi-Agent Personalized Learning & Career Guidance Platform
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/adishjprasanth7/skill-sync-ai-)
+
 SkillSync AI is an enterprise-grade personalized learning and career intelligence platform powered by a coordinated 6-agent collaborative AI swarm. It replaces one-size-fits-all roadmaps with dynamic, competency-grounded progression tracks optimized for real-world software engineering careers.
 
 ---
